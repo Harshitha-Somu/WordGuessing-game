@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Word Permutation Game (Frontend Only)</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .game-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+    input, button {
+      padding: 12px;
+      margin: 10px 5px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+    }
+    input {
+      width: 80%;
+      outline: none;
+    }
+    button {
+      cursor: pointer;
+      background-color: #ffd700;
+      color: #333;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #e6c200;
+    }
+    #scrambled-word {
+      font-weight: bold;
+      font-size: 1.3rem;
+      margin: 20px 0;
+      letter-spacing: 2px;
+    }
+    #result-msg {
+      min-height: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container" role="main">
+    <h1>🧩 Word Permutation Game</h1>
+    <p id="scrambled-word">Click Start Game to begin</p>
+    <input type="text" id="user-input" placeholder="Your guess here" autocomplete="off" disabled />
+    <br />
+    <button id="submit-btn" disabled>Submit Guess</button>
+    <button id="start-btn">Start Game</button>
+    <button id="stop-btn" disabled>Stop Game</button>
+    <p id="result-msg"></p>
+    <p id="score">User: 0 | System: 0</p>
+  </div>
+
+  <script>
+    // Word list
+    const words = [
+      "apple", "banana", "orange", "mango", "cherry", "grapes",
+      "peach", "lemon", "melon", "kiwi", "papaya", "plum",
+      "guava", "apricot", "fig", "date", "berry", "lime"
+    ];
+
+    let userScore = 0;
+    let systemScore = 0;
+    let currentWord = "";
+    let scrambledWord = "";
+    let gameRunning = false;
+
+    function permute(str) {
+      if (str.length <= 1) return [str];
+      let permutations = new Set();
+      for (let i = 0; i < str.length; i++) {
+        let char = str[i];
+        let remaining = str.slice(0, i) + str.slice(i + 1);
+        for (const perm of permute(remaining)) {
+          permutations.add(char + perm);
+        }
+      }
+      return Array.from(permutations);
+    }
+
+    function startGame() {
+      userScore = 0;
+      systemScore = 0;
+      gameRunning = true;
+      document.getElementById('score').innerText = `User: ${userScore} | System: ${systemScore}`;
+      document.getElementById('result-msg').innerText = '';
+      document.getElementById('user-input').disabled = false;
+      document.getElementById('submit-btn').disabled = false;
+      document.getElementById('stop-btn').disabled = false;
+      document.getElementById('start-btn').disabled = true;
+      nextRound();
+    }
+
+    function nextRound() {
+      currentWord = words[Math.floor(Math.random() * words.length)];
+      const allScrambled = permute(currentWord);
+      do {
+        scrambledWord = allScrambled[Math.floor(Math.random() * allScrambled.length)];
+      } while (scrambledWord === currentWord);
+      document.getElementById('scrambled-word').innerText = `Guess this word: ${scrambledWord}`;
+      document.getElementById('user-input').value = '';
+      document.getElementById('user-input').focus();
+    }
+
+    function submitGuess() {
+      if (!gameRunning) return;
+      const guess = document.getElementById('user-input').value.trim().toLowerCase();
+      if (!guess) {
+        alert('Please enter your guess!');
+        return;
+      }
+      if (guess === currentWord) {
+        userScore++;
+        document.getElementById('result-msg').innerText = "Correct! 🎉";
+      } else {
+        systemScore++;
+        document.getElementById('result-msg').innerText = `Wrong! The word was '${currentWord}'.`;
+      }
+      document.getElementById('score').innerText = `User: ${userScore} | System: ${systemScore}`;
+      nextRound();
+    }
+
+    function stopGame() {
+      gameRunning = false;
+      document.getElementById('user-input').disabled = true;
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('stop-btn').disabled = true;
+      document.getElementById('start-btn').disabled = false;
+      document.getElementById('scrambled-word').innerText = "Game stopped!";
+      // Announce winner
+      let message = '';
+      if (userScore > systemScore) {
+        message = `🎉 You Won! Final Score - User: ${userScore}, System: ${systemScore}`;
+      } else if (systemScore > userScore) {
+        message = `🤖 System Won! Final Score - User: ${userScore}, System: ${systemScore}`;
+      } else {
+        message = `It's a Tie! Final Score - User: ${userScore}, System: ${systemScore}`;
+      }
+      document.getElementById('result-msg').innerText = message;
+    }
+
+    document.getElementById('start-btn').addEventListener('click', startGame);
+    document.getElementById('submit-btn').addEventListener('click', submitGuess);
+    document.getElementById('stop-btn').addEventListener('click', stopGame);
+
+    document.getElementById('user-input').addEventListener('keyup', function(event) {
+      if (event.key === 'Enter') {
+        submitGuess();
+      }
+    });
+  </script>
+</body>
+</html>
