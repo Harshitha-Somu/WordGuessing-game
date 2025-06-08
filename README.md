@@ -1,6 +1,6 @@
-## 🎮 Hangman Word Permutation Game
+## 🎮 Word Guessing Game
 
-A fun twist on Hangman where you guess the original word from scrambled letters.
+A fun twist where you guess the original word from scrambled letters.
 
 🕹️ [Play it here](https://harshitha-somu.github.io/hangman-game/)
 
