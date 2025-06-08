@@ -2,7 +2,7 @@
 
 A fun twist where you guess the original word from scrambled letters.
 
-🕹️ [Play it here](https://harshitha-somu.github.io/hangman-game/)
+🕹️ [Play it here]( https://harshitha-somu.github.io/WordGuessing-game/)
 
 ### 📌 Features
 - Random word shuffling
